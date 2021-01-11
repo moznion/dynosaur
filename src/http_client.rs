@@ -29,4 +29,12 @@ impl HttpClient {
     pub(crate) fn get<U: IntoUrl>(&self, url: U) -> RequestBuilder {
         self.c.get(url)
     }
+
+    pub(crate) fn post<U: IntoUrl>(&self, url: U) -> RequestBuilder {
+        self.c.post(url)
+    }
+
+    pub(crate) fn put<U: IntoUrl>(&self, url: U) -> RequestBuilder {
+        self.c.put(url)
+    }
 }
