@@ -179,6 +179,11 @@ impl RecordUpdater for Cloudflare {
         match resp.result.len() {
             0 => self.create_record(ip, record_type, record_name, ttl).await,
             1 => {
+                if resp.result[0].content == ip.to_string() {
+                    // not changed; there is nothing to do
+                    return Ok(());
+                }
+
                 self.update_record(&resp.result[0].id, ip, record_type, record_name, ttl)
                     .await
             }
