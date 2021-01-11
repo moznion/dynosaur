@@ -21,14 +21,14 @@ pub enum HttpbinIpFetcherError {
     MalformedIpAddress(String),
 }
 
-const HTTPBIN_IP_URL: &str = "https://httpbin.org/ip";
-const ORIGIN_PROPERTY_KEY: &str = "origin";
-
 pub struct Httpbin {
     http_client: HttpClient,
 }
 
 impl Httpbin {
+    const HTTPBIN_IP_URL: &'static str = "https://httpbin.org/ip";
+    const ORIGIN_PROPERTY_KEY: &'static str = "origin";
+
     pub fn new(timeout: Option<Duration>, user_agent: Option<&str>) -> Result<Self> {
         let http_client = HttpClient::new(timeout, user_agent)?;
         Ok(Self { http_client })
@@ -40,7 +40,7 @@ impl IpFetcher for Httpbin {
     async fn fetch_public_ip_address(&self) -> Result<IpAddr> {
         let resp = self
             .http_client
-            .get(HTTPBIN_IP_URL)
+            .get(Self::HTTPBIN_IP_URL)
             .send()
             .await
             .context("failed to do GET request to httpbin")?
@@ -48,7 +48,7 @@ impl IpFetcher for Httpbin {
             .await
             .context("failed to map the response to a JSON")?;
 
-        match resp.get(ORIGIN_PROPERTY_KEY) {
+        match resp.get(Self::ORIGIN_PROPERTY_KEY) {
             Some(ip_str) => match IpAddr::from_str(ip_str) {
                 Ok(ip) => Ok(ip),
                 Err(_) => Err(MalformedIpAddress(ip_str.to_owned()))?,

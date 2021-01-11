@@ -3,13 +3,13 @@ use std::time::Duration;
 use anyhow::Result;
 use reqwest::{IntoUrl, RequestBuilder};
 
-const DEFAULT_USER_AGENT: &str = "dynosaurd"; // TODO embed the version
-
 pub(crate) struct HttpClient {
     c: reqwest::Client,
 }
 
 impl HttpClient {
+    const DEFAULT_USER_AGENT: &'static str = "dynosaurd"; // TODO embed the version
+
     pub(crate) fn new(timeout: Option<Duration>, user_agent: Option<&str>) -> Result<Self> {
         let mut client_builder = reqwest::Client::builder();
 
@@ -19,7 +19,7 @@ impl HttpClient {
 
         client_builder = match user_agent {
             Some(ua) => client_builder.user_agent(ua),
-            None => client_builder.user_agent(DEFAULT_USER_AGENT),
+            None => client_builder.user_agent(Self::DEFAULT_USER_AGENT),
         };
 
         let http_client = client_builder.build()?;

@@ -10,8 +10,6 @@ use crate::http_client::HttpClient;
 use crate::ip_fetcher::ifconfig_io::IfconfigIoIpFetcherError::MalformedIpAddress;
 use crate::ip_fetcher::IpFetcher;
 
-const IFCONFIG_IO_URL: &str = "https://ifconfig.io/ip";
-
 #[derive(Error, Debug)]
 pub enum IfconfigIoIpFetcherError {
     #[error("malformed ip address: {0}")]
@@ -23,6 +21,8 @@ pub struct IfconfigIo {
 }
 
 impl IfconfigIo {
+    const IFCONFIG_IO_URL: &'static str = "https://ifconfig.io/ip";
+
     pub fn new(timeout: Option<Duration>, user_agent: Option<&str>) -> Result<Self> {
         let http_client = HttpClient::new(timeout, user_agent)?;
         Ok(Self { http_client })
@@ -34,7 +34,7 @@ impl IpFetcher for IfconfigIo {
     async fn fetch_public_ip_address(&self) -> Result<IpAddr> {
         let ip_str = self
             .http_client
-            .get(IFCONFIG_IO_URL)
+            .get(Self::IFCONFIG_IO_URL)
             .send()
             .await
             .context("failed to do GET request to ifconfig.io")?
