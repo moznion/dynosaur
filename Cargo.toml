@@ -1,0 +1,13 @@
+[package]
+name = "dynosaurd"
+version = "0.1.0"
+authors = ["moznion <moznion@mail.moznion.net>"]
+edition = "2018"
+license = "MIT"
+
+[dependencies]
+reqwest = { version = "0.11", features = ["json"] }
+tokio = { version = "1", features = ["full"] }
+thiserror = "1.0"
+anyhow = "1.0"
+async-trait = "0.1"
