@@ -8,7 +8,7 @@ pub(crate) struct HttpClient {
 }
 
 impl HttpClient {
-    const DEFAULT_USER_AGENT: &'static str = "dynosaurd"; // TODO embed the version
+    const DEFAULT_USER_AGENT: &'static str = "dynosaur"; // TODO embed the version
 
     pub(crate) fn new(timeout: Option<Duration>, user_agent: Option<&str>) -> Result<Self> {
         let mut client_builder = reqwest::Client::builder();

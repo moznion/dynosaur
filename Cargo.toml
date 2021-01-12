@@ -1,5 +1,5 @@
 [package]
-name = "dynosaurd"
+name = "dynosaur"
 version = "0.1.0"
 authors = ["moznion <moznion@mail.moznion.net>"]
 edition = "2018"

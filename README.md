@@ -1,4 +1,4 @@
-# dynosaurd
+# dynosaur
 
 A simple DDNS agent.
 
