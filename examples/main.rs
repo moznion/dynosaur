@@ -1,10 +1,16 @@
-# dynosaur
+#[macro_use]
+extern crate log;
 
-A simple framework for DDNS agent.
+use std::env;
+use std::time::Duration;
 
-## Synopsis
+use tokio::signal;
 
-```rust
+use dynosaur::daemon::Daemon;
+use dynosaur::ip_fetcher::ifconfig_io::IfconfigIo;
+use dynosaur::record_updater::cloudflare::Cloudflare;
+use dynosaur::record_updater::SubjectRecord;
+
 #[tokio::main]
 async fn main() {
     env_logger::init();
@@ -31,15 +37,3 @@ async fn main() {
     .await
     .unwrap();
 }
-```
-
-Entire example is here: [./examples/main.rs](./examples/main.rs)
-
-## Description
-
-TBD
-
-## Author
-
-moznion (<moznion@mail.moznion.net>)
-
