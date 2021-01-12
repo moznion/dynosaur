@@ -1,6 +1,8 @@
 # dynosaur
 
-A simple DDNS agent.
+A simple framework for DDNS agent.
+
+TBD TBD TBD
 
 ## Author
 
