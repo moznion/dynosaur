@@ -11,7 +11,7 @@ use crate::http_client::HttpClient;
 use crate::record_updater::cloudflare::HttpbinIpFetcherError::{
     AmbiguousDNSRecords, DNSRecordRetrievalFailed,
 };
-use crate::record_updater::RecordUpdater;
+use crate::record_updater::{RecordUpdater, SubjectRecord};
 
 #[derive(Error, Debug)]
 pub enum HttpbinIpFetcherError {
@@ -104,7 +104,7 @@ impl Cloudflare {
 
     async fn create_record(
         &self,
-        ip: IpAddr,
+        ip: &IpAddr,
         record_type: &str,
         record_name: &str,
         ttl: Option<Duration>,
@@ -127,7 +127,7 @@ impl Cloudflare {
     async fn update_record(
         &self,
         record_id: &str,
-        ip: IpAddr,
+        ip: &IpAddr,
         record_type: &str,
         record_name: &str,
         ttl: Option<Duration>,
@@ -152,7 +152,7 @@ impl Cloudflare {
     }
 
     fn construct_dns_create_request(
-        ip: IpAddr,
+        ip: &IpAddr,
         record_type: &str,
         record_name: &str,
         ttl: Option<Duration>,
@@ -168,28 +168,38 @@ impl Cloudflare {
 
 #[async_trait]
 impl RecordUpdater for Cloudflare {
-    async fn update(
-        &self,
-        ip: IpAddr,
-        record_type: &str,
-        record_name: &str,
-        ttl: Option<Duration>,
-    ) -> Result<()> {
-        let resp = self.retrieve_records(record_type, record_name).await?;
+    async fn update(&self, ip: &IpAddr, subject_record: &SubjectRecord) -> Result<()> {
+        let resp = self
+            .retrieve_records(&subject_record.record_type, &subject_record.record_name)
+            .await?;
         match resp.result.len() {
-            0 => self.create_record(ip, record_type, record_name, ttl).await,
+            0 => {
+                self.create_record(
+                    &ip,
+                    &subject_record.record_type,
+                    &subject_record.record_name,
+                    subject_record.ttl,
+                )
+                .await
+            }
             1 => {
                 if resp.result[0].content == ip.to_string() {
                     // not changed; there is nothing to do
                     return Ok(());
                 }
 
-                self.update_record(&resp.result[0].id, ip, record_type, record_name, ttl)
-                    .await
+                self.update_record(
+                    &resp.result[0].id,
+                    &ip,
+                    &subject_record.record_type,
+                    &subject_record.record_name,
+                    subject_record.ttl,
+                )
+                .await
             }
             _ => Err(AmbiguousDNSRecords(
-                record_name.to_owned(),
-                record_type.to_owned(),
+                (&subject_record.record_name).to_string(),
+                (&subject_record.record_type).to_string(),
             ))?,
         }
     }
