@@ -3,14 +3,14 @@ use std::time::Duration;
 use anyhow::Result;
 use reqwest::{IntoUrl, RequestBuilder};
 
-pub(crate) struct HttpClient {
+pub struct HttpClient {
     c: reqwest::Client,
 }
 
 impl HttpClient {
     const DEFAULT_USER_AGENT: &'static str = "dynosaur"; // TODO embed the version
 
-    pub(crate) fn new(timeout: Option<Duration>, user_agent: Option<&str>) -> Result<Self> {
+    pub fn new(timeout: Option<Duration>, user_agent: Option<&str>) -> Result<Self> {
         let mut client_builder = reqwest::Client::builder();
 
         if let Some(t) = timeout {
@@ -26,15 +26,15 @@ impl HttpClient {
         Ok(Self { c: http_client })
     }
 
-    pub(crate) fn get<U: IntoUrl>(&self, url: U) -> RequestBuilder {
+    pub fn get<U: IntoUrl>(&self, url: U) -> RequestBuilder {
         self.c.get(url)
     }
 
-    pub(crate) fn post<U: IntoUrl>(&self, url: U) -> RequestBuilder {
+    pub fn post<U: IntoUrl>(&self, url: U) -> RequestBuilder {
         self.c.post(url)
     }
 
-    pub(crate) fn put<U: IntoUrl>(&self, url: U) -> RequestBuilder {
+    pub fn put<U: IntoUrl>(&self, url: U) -> RequestBuilder {
         self.c.put(url)
     }
 }
